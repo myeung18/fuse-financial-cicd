@@ -4,11 +4,11 @@ import groovy.json.JsonOutput
 def gitRepo = params.GIT_REPO
 def gitBranch = params.GIT_BRANCH != null && params.GIT_BRANCH != "" ? params.GIT_BRANCH : "master"
 
-node('nodejs') {
+node('maven') {
   // Get Source Code from SCM (Git) as configured in the Jenkins Project
   stage('Checkout Source') {
     // For Jenkinsfile from GIT
-    checkout scm
+    //checkout scm
     // for inline scripts
     //git url: gitRepo, branch: gitBranch
   }
