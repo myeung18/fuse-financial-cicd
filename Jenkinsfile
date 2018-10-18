@@ -28,9 +28,14 @@ node('nodejs') {
   def currentVersion = thisPackage.version
   def newVersion = "$currentVersion-$BUILD_NUMBER"
 
-  stage('Unit Tests') {
-    sh "npm test"
+ 
+
+stage('moveToProd'){
+      openshiftTag alias: "false",  destStream: "fisgateway-service", destTag: "latest", destinationNamespace: params.PROD_PROJECT_NAMESPACE, namespace: params.UAT_PROJECT_NAMESPACE, srcStream: "fisgateway-service-uat", srcTag: "uatready", verbose: "true"
   }
+
+
+
 
   // Build the OpenShift Image in OpenShift using the artifacts from NPM
   // Also tag the image
