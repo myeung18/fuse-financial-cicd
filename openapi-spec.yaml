@@ -1,0 +1,70 @@
+---
+swagger: "2.0"
+info:
+  title: FIS Gateway
+  version: 1.0.0
+host: 0.0.0.0
+basePath: /demos
+schemes:
+- http
+paths:
+  /sourcegateway/balance/{acctid}:
+    get:
+      tags:
+      - sourcegateway
+      operationId: route1
+      parameters:
+      - name: acctid
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: OK
+  /sourcegateway/logo:
+    get:
+      tags:
+      - sourcegateway
+      operationId: route3
+      responses:
+        200:
+          description: OK
+  /sourcegateway/profile/{acctid}:
+    get:
+      tags:
+      - sourcegateway
+      operationId: route2
+      parameters:
+      - name: acctid
+        in: path
+        required: true
+        type: string
+      responses:
+        200: {}
+  /sourcegateway/transfer:
+    post:
+      tags:
+      - sourcegateway
+      operationId: route4
+      responses:
+        200:
+          description: OK
+  /sourcegateway/transferwithjson:
+    post:
+      tags:
+      - sourcegateway
+      operationId: route5
+      responses:
+        200:
+          description: OK
+securityDefinitions:
+  apikey:
+    type: apiKey
+    description: Use a 3scale API Key
+    name: api-key
+    in: header
+security:
+- apikey: []
+tags:
+- name: sourcegateway
+  description: Banking Gateway
