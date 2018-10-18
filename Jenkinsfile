@@ -6,12 +6,12 @@ def gitBranch = params.GIT_BRANCH != null && params.GIT_BRANCH != "" ? params.GI
 
 node('maven') {
   // Get Source Code from SCM (Git) as configured in the Jenkins Project
-  stage('Checkout Source') {
+  //stage('Checkout Source') {
     // For Jenkinsfile from GIT
     //checkout scm
     // for inline scripts
     //git url: gitRepo, branch: gitBranch
-  }
+  //}
 
   def towerExtraVars = [
       git_repo: gitRepo,
@@ -24,9 +24,9 @@ node('maven') {
       openapi_file: "openapi-spec.yaml"
   ]
 
-  def thisPackage = readJSON file: 'package.json'
-  def currentVersion = thisPackage.version
-  def newVersion = "$currentVersion-$BUILD_NUMBER"
+  //def thisPackage = readJSON file: 'package.json'
+  //def currentVersion = thisPackage.version
+ // def newVersion = "$currentVersion-$BUILD_NUMBER"
 
  
 
