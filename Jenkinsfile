@@ -25,13 +25,13 @@ node('maven') {
   ]
 
   //def thisPackage = readJSON file: 'package.json'
-  //def currentVersion = thisPackage.version
- // def newVersion = "$currentVersion-$BUILD_NUMBER"
+  def currentVersion = thisPackage.version
+  def newVersion = "$currentVersion-$BUILD_NUMBER"
 
  
 
 stage('moveToProd'){
-      openshiftTag alias: "false",  destStream: "fisgateway-service", destTag: "latest", destinationNamespace: params.PROD_PROJECT_NAMESPACE, namespace: params.UAT_PROJECT_NAMESPACE, srcStream: "fisgateway-service-uat", srcTag: "uatready", verbose: "true"
+      openshiftTag alias: "false",  destStream: "fisgateway-service", destTag: "latest", destinationNamespace: "fisdemoprod", namespace: "fisdemo", srcStream: "fisgateway-service-uat", srcTag: "uatready", verbose: "true"
   }
 
 
