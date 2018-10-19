@@ -5,6 +5,19 @@ def gitRepo = params.GIT_REPO
 def gitBranch = params.GIT_BRANCH != null && params.GIT_BRANCH != "" ? params.GIT_BRANCH : "master"
 
 node('maven') {
+
+
+ String env.threescaleurl = "https://ah-3scale-ansible-admin.app.rhdp.ocp.cloud.lab.eng.bos.redhat.com";    
+ String env.apiaccesstoken = "845927b93be20fa491bf5601cc5e7fafa11d9d7eea8d70e7e46a79d35eab0aa2";    
+ String env.appplanid = "17";
+ String env.metricsid = "10";
+ String env.ablimit = 25;
+  
+  
+  env.uatnamespace = "fisdemo";
+  env.prodnamespace = "fisdemoprod";
+
+
   // Get Source Code from SCM (Git) as configured in the Jenkins Project
   //stage('Checkout Source') {
     // For Jenkinsfile from GIT
@@ -69,14 +82,14 @@ stage('StartNewServices') {
 
   //}
 
-  stage('Deploy API to test') {
+ // stage('Deploy API to test') {
     // Tag the new build as "ready-for-test"
-    openshiftTag alias: 'false', destStream: params.OPENSHIFT_IMAGE_STREAM, srcTag: "${newVersion}",
-                 destinationNamespace: params.OPENSHIFT_TEST_ENVIRONMENT, namespace: params.OPENSHIFT_BUILD_PROJECT,
-                 srcStream: params.OPENSHIFT_IMAGE_STREAM, destTag: 'ready-for-test', verbose: 'false'
+    //openshiftTag alias: 'false', destStream: params.OPENSHIFT_IMAGE_STREAM, srcTag: "${newVersion}",
+                 //destinationNamespace: params.OPENSHIFT_TEST_ENVIRONMENT, namespace: params.OPENSHIFT_BUILD_PROJECT,
+                 //srcStream: params.OPENSHIFT_IMAGE_STREAM, destTag: 'ready-for-test', verbose: 'false'
 
     // Trigger a new deployment
-    openshiftDeploy deploymentConfig: params.OPENSHIFT_DEPLOYMENT_CONFIG, namespace: params.OPENSHIFT_TEST_ENVIRONMENT
+    //openshiftDeploy deploymentConfig: params.OPENSHIFT_DEPLOYMENT_CONFIG, namespace: params.OPENSHIFT_TEST_ENVIRONMENT
 
     // Deploy the API to 3scale
     ansibleTower towerServer: params.ANSIBLE_TOWER_SERVER,
