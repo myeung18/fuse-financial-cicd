@@ -14,8 +14,8 @@ node('maven') {
  String env.ablimit = 25;
   
   
-  env.uatnamespace = "fisdemo";
-  env.prodnamespace = "fisdemoprod";
+ String env.uatnamespace = "fisdemo";
+ String env.prodnamespace = "fisdemoprod";
 
 
   // Get Source Code from SCM (Git) as configured in the Jenkins Project
@@ -44,23 +44,36 @@ node('maven') {
  
 
 stage('moveToProd'){
-      openshiftTag alias: "false",  destStream: "fisgateway-service", destTag: "latest", destinationNamespace: "fisdemoprod", namespace: "fisdemo", srcStream: "fisgateway-service-uat", srcTag: "uatready", verbose: "true"
+    echo "UAT at ${env.uatnamespace} and PROD at ${env.prodnamespace}"
+    openshiftTag alias: "false",  destStream: "fisgateway-service", destTag: "latest", destinationNamespace: "${env.prodnamespace}", namespace: "${env.uatnamespace}", srcStream: "fisgateway-service-uat", srcTag: "uatready", verbose: "true"
   }
-
-
-stage('StartNewServices') {
+  
+  stage('StartNewServices') {
     print 'Start new service with one pod running' 
-    openshiftScale depCfg: "fisgateway-service-new", namespace: "fisdemoprod", replicaCount: "1", verifyReplicaCount: "true", verbose: "true"
+    openshiftScale depCfg: "fisgateway-service-new", namespace: "${env.prodnamespace}", replicaCount: "1", verifyReplicaCount: "true", verbose: "true"
   }
-
-
-
+  
   stage('UpdateRouteToAB') { 
     print 'deleteroute' 
-    openshiftDeleteResourceByKey keys: "fisgateway-service", namespace: "fisdemoprod", types: "route", verbose: "true"
+    openshiftDeleteResourceByKey keys: "fisgateway-service", namespace: "${env.prodnamespace}", types: "route", verbose: "true"
     
     print 'Update Route to only point to both new and stable service' 
-    openshiftCreateResource jsonyaml: "{    'apiVersion': 'v1',    'kind': 'Route',    'metadata': {        'labels': {            'component': 'fisgateway-service-stable',            'group': 'quickstarts',            'project': 'fisgateway-service-stable',            'provider': 's2i',            'template': 'fisgateway-service',            'version': '1.0.0'        },        'name': 'fisgateway-service',        'namespace': 'fisdemoprod'    },    'spec': {        'alternateBackends': [            {                'kind': 'Service',                'name': 'fisgateway-service-new',                'weight': 30            }        ],        'host': 'fisgateway-service-fisdemoprod.master.rhdp.ocp.cloud.lab.eng.bos.redhat.com',        'to': {            'kind': 'Service',            'name': 'fisgateway-service-stable',            'weight': 70        },        'wildcardPolicy': 'None'    }}", namespace: "fisdemoprod", verbose: "false"
+    openshiftCreateResource jsonyaml: "{    'apiVersion': 'v1',    'kind': 'Route',    'metadata': {        'labels': {            'component': 'fisgateway-service-stable',            'group': 'quickstarts',            'project': 'fisgateway-service-stable',            'provider': 's2i',            'template': 'fisgateway-service',            'version': '1.0.0'        },        'name': 'fisgateway-service',        'namespace': '${env.prodnamespace}'    },    'spec': {        'alternateBackends': [            {                'kind': 'Service',                'name': 'fisgateway-service-new',                'weight': 30            }        ],        'host': 'fisgateway-service-${env.prodnamespace}.master.rhdp.ocp.cloud.lab.eng.bos.redhat.com',        'to': {            'kind': 'Service',            'name': 'fisgateway-service-stable',            'weight': 70        },        'wildcardPolicy': 'None'    }}", namespace: "${env.prodnamespace}", verbose: "false"
+  }
+  
+  stage('GetCurrentLimitId') { 
+    print 'Get Current Limit Id'
+    env.LIMIT_ID = sh (
+      script: "curl -k --silent -X GET \"${env.threescaleurl}/admin/api/application_plans/${env.appplanid}/metrics/${env.metricsid}/limits.xml?access_token=${env.apiaccesstoken}\" --stderr - | sed -e 's,.*<id>\\([^<]*\\)</id>.*,\\1,g' ", 
+      returnStdout: true
+    ).trim()
+    echo env.LIMIT_ID
+  }
+  
+  stage('UpdateLimitToAB') { 
+    print 'Update 3scale Limit back to AB Testing mode'  
+    sh  "echo Updating Id ${env.LIMIT_ID} to less request ${env.ablimit} per min because of AB Testing"
+    sh  "curl -k -s -o /dev/null -w \"%{http_code}\\n\" -X PUT  \"${env.threescaleurl}/admin/api/application_plans/${env.appplanid}/metrics/${env.metricsid}/limits/${env.LIMIT_ID}.xml\" -d \'access_token=${env.apiaccesstoken}&period=minute&value=${env.ablimit}\'"  
   }
 
 
