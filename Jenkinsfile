@@ -81,7 +81,7 @@ stage('moveToProd'){
 
   // Build the OpenShift Image in OpenShift using the artifacts from NPM
   // Also tag the image
-  //stage('Build OpenShift Image') {
+  stage('Build OpenShift Image') {
     // Trigger an OpenShift build in the dev environment
    // openshiftBuild bldCfg: params.OPENSHIFT_BUILD_CONFIG, checkForTriggeredDeployments: 'false',
                    //namespace: params.OPENSHIFT_BUILD_PROJECT, showBuildLogs: 'true',
