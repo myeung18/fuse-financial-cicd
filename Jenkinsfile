@@ -82,7 +82,7 @@ node('maven') {
 
   // Build the OpenShift Image in OpenShift using the artifacts from NPM
   // Also tag the image
-  stage('Build OpenShift Image') {
+  //stage('Build OpenShift Image') {
     // Trigger an OpenShift build in the dev environment
    // openshiftBuild bldCfg: params.OPENSHIFT_BUILD_CONFIG, checkForTriggeredDeployments: 'false',
                    //namespace: params.OPENSHIFT_BUILD_PROJECT, showBuildLogs: 'true',
@@ -96,7 +96,7 @@ node('maven') {
 
   //}
 
- // stage('Deploy API to test') {
+ stage('Deploy API to 3scale') {
     // Tag the new build as "ready-for-test"
     //openshiftTag alias: 'false', destStream: params.OPENSHIFT_IMAGE_STREAM, srcTag: "${newVersion}",
                  //destinationNamespace: params.OPENSHIFT_TEST_ENVIRONMENT, namespace: params.OPENSHIFT_BUILD_PROJECT,
