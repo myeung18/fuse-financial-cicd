@@ -25,8 +25,8 @@ node('maven') {
   ]
 
   //def thisPackage = readJSON file: 'package.json'
-  def currentVersion = thisPackage.version
-  def newVersion = "$currentVersion-$BUILD_NUMBER"
+  //def currentVersion = thisPackage.version
+  //def newVersion = "$currentVersion-$BUILD_NUMBER"
 
  
 
@@ -39,17 +39,17 @@ stage('moveToProd'){
 
   // Build the OpenShift Image in OpenShift using the artifacts from NPM
   // Also tag the image
-  stage('Build OpenShift Image') {
+  //stage('Build OpenShift Image') {
     // Trigger an OpenShift build in the dev environment
-    openshiftBuild bldCfg: params.OPENSHIFT_BUILD_CONFIG, checkForTriggeredDeployments: 'false',
-                   namespace: params.OPENSHIFT_BUILD_PROJECT, showBuildLogs: 'true',
-                   verbose: 'false', waitTime: '', waitUnit: 'sec', env: [ ]
+   // openshiftBuild bldCfg: params.OPENSHIFT_BUILD_CONFIG, checkForTriggeredDeployments: 'false',
+                   //namespace: params.OPENSHIFT_BUILD_PROJECT, showBuildLogs: 'true',
+                   //verbose: 'false', waitTime: '', waitUnit: 'sec', env: [ ]
 
 
     // Tag the new build
-    openshiftTag alias: 'false', destStream: params.OPENSHIFT_IMAGE_STREAM, destTag: "${newVersion}",
-                 destinationNamespace: params.OPENSHIFT_BUILD_PROJECT, namespace: params.OPENSHIFT_BUILD_PROJECT,
-                 srcStream: params.OPENSHIFT_IMAGE_STREAM, srcTag: 'latest', verbose: 'false'
+    //openshiftTag alias: 'false', destStream: params.OPENSHIFT_IMAGE_STREAM, destTag: "${newVersion}",
+                 //destinationNamespace: params.OPENSHIFT_BUILD_PROJECT, namespace: params.OPENSHIFT_BUILD_PROJECT,
+                // srcStream: params.OPENSHIFT_IMAGE_STREAM, srcTag: 'latest', verbose: 'false'
 
   }
 
