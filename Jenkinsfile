@@ -51,7 +51,7 @@ stage('moveToProd'){
                  //destinationNamespace: params.OPENSHIFT_BUILD_PROJECT, namespace: params.OPENSHIFT_BUILD_PROJECT,
                 // srcStream: params.OPENSHIFT_IMAGE_STREAM, srcTag: 'latest', verbose: 'false'
 
-  }
+  //}
 
   stage('Deploy API to test') {
     // Tag the new build as "ready-for-test"
