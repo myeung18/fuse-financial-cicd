@@ -35,6 +35,22 @@ stage('moveToProd'){
   }
 
 
+stage('StartNewServices') {
+    print 'Start new service with one pod running' 
+    openshiftScale depCfg: "fisgateway-service-new", namespace: "fisdemoprod", replicaCount: "1", verifyReplicaCount: "true", verbose: "true"
+  }
+
+
+
+  stage('UpdateRouteToAB') { 
+    print 'deleteroute' 
+    openshiftDeleteResourceByKey keys: "fisgateway-service", namespace: "fisdemoprod", types: "route", verbose: "true"
+    
+    print 'Update Route to only point to both new and stable service' 
+    openshiftCreateResource jsonyaml: "{    'apiVersion': 'v1',    'kind': 'Route',    'metadata': {        'labels': {            'component': 'fisgateway-service-stable',            'group': 'quickstarts',            'project': 'fisgateway-service-stable',            'provider': 's2i',            'template': 'fisgateway-service',            'version': '1.0.0'        },        'name': 'fisgateway-service',        'namespace': 'fisdemoprod'    },    'spec': {        'alternateBackends': [            {                'kind': 'Service',                'name': 'fisgateway-service-new',                'weight': 30            }        ],        'host': 'fisgateway-service-fisdemoprod.master.rhdp.ocp.cloud.lab.eng.bos.redhat.com',        'to': {            'kind': 'Service',            'name': 'fisgateway-service-stable',            'weight': 70        },        'wildcardPolicy': 'None'    }}", namespace: "fisdemoprod", verbose: "false"
+  }
+
+
 
 
   // Build the OpenShift Image in OpenShift using the artifacts from NPM
