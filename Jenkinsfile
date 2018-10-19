@@ -54,13 +54,13 @@ node('maven') {
  //   openshiftScale depCfg: "fisgateway-service-new", namespace: "${env.prodnamespace}", replicaCount: "1", verifyReplicaCount: "true", verbose: "true"
 //  }
   
- // stage('UpdateRouteToAB') { 
- //   print 'deleteroute' 
-  //  openshiftDeleteResourceByKey keys: "fisgateway-service", namespace: "${env.prodnamespace}", types: "route", verbose: "true"
+  stage('UpdateRouteToAB') { 
+    print 'deleteroute' 
+    openshiftDeleteResourceByKey keys: "fisgateway-service", namespace: "${env.prodnamespace}", types: "route", verbose: "true"
     
-//    print 'Update Route to only point to both new and stable service' 
-//    openshiftCreateResource jsonyaml: "{    'apiVersion': 'v1',    'kind': 'Route',    'metadata': {        'labels': {            'component': 'fisgateway-service-stable',            'group': 'quickstarts',            'project': 'fisgateway-service-stable',            'provider': 's2i',            'template': 'fisgateway-service',            'version': '1.0.0'        },        'name': 'fisgateway-service',        'namespace': '${env.prodnamespace}'    },    'spec': {        'alternateBackends': [            {                'kind': 'Service',                'name': 'fisgateway-service-new',                'weight': 30            }        ],        'host': 'fisgateway-service-${env.prodnamespace}.master.rhdp.ocp.cloud.lab.eng.bos.redhat.com',        'to': {            'kind': 'Service',            'name': 'fisgateway-service-stable',            'weight': 70        },        'wildcardPolicy': 'None'    }}", namespace: "${env.prodnamespace}", verbose: "false"
- // }
+    print 'Update Route to only point to both new and stable service' 
+    openshiftCreateResource jsonyaml: "{    'apiVersion': 'v1',    'kind': 'Route',    'metadata': {        'labels': {            'component': 'fisgateway-service-stable',            'group': 'quickstarts',            'project': 'fisgateway-service-stable',            'provider': 's2i',            'template': 'fisgateway-service',            'version': '1.0.0'        },        'name': 'fisgateway-service',        'namespace': '${env.prodnamespace}'    },    'spec': {        'alternateBackends': [            {                'kind': 'Service',                'name': 'fisgateway-service-new',                'weight': 30            }        ],        'host': 'fisgateway-service-${env.prodnamespace}.master.rhdp.ocp.cloud.lab.eng.bos.redhat.com',        'to': {            'kind': 'Service',            'name': 'fisgateway-service-stable',            'weight': 70        },        'wildcardPolicy': 'None'    }}", namespace: "${env.prodnamespace}", verbose: "false"
+  }
   
  // stage('GetCurrentLimitId') { 
 //    print 'Get Current Limit Id'
