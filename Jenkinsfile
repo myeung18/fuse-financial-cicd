@@ -31,7 +31,7 @@ node('maven') {
       git_branch: gitBranch,
       //threescale_cicd_api_backend_hostname: params.OPENSHIFT_SERVICE_NAME + ":8080",
       threescale_cicd_api_backend_hostname: "fisgateway-service-fisdemoprod.master.rhdp.ocp.cloud.lab.eng.bos.redhat.com:80",
-      threescale_cicd_openapi_smoketest_operation: "/demos/sourcegateway/balance/234567",
+      threescale_cicd_openapi_smoketest_operation: "route1",
       threescale_cicd_api_backend_scheme: "http",
       threescale_cicd_api_base_system_name: "3scaleFuse",
       threescale_cicd_validate_openapi: false,
