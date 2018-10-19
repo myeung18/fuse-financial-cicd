@@ -7,15 +7,15 @@ def gitBranch = params.GIT_BRANCH != null && params.GIT_BRANCH != "" ? params.GI
 node('maven') {
 
 
- String env.threescaleurl = "https://ah-3scale-ansible-admin.app.rhdp.ocp.cloud.lab.eng.bos.redhat.com";    
- String env.apiaccesstoken = "845927b93be20fa491bf5601cc5e7fafa11d9d7eea8d70e7e46a79d35eab0aa2";    
- String env.appplanid = "17";
- String env.metricsid = "10";
- String env.ablimit = 25;
+ def env.threescaleurl = "https://ah-3scale-ansible-admin.app.rhdp.ocp.cloud.lab.eng.bos.redhat.com";    
+ def env.apiaccesstoken = "845927b93be20fa491bf5601cc5e7fafa11d9d7eea8d70e7e46a79d35eab0aa2";    
+ def env.appplanid = "17";
+ def env.metricsid = "10";
+ def env.ablimit = 25;
   
   
- String env.uatnamespace = "fisdemo";
- String env.prodnamespace = "fisdemoprod";
+  env.uatnamespace = "fisdemo";
+  env.prodnamespace = "fisdemoprod";
 
 
   // Get Source Code from SCM (Git) as configured in the Jenkins Project
