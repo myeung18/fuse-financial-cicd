@@ -14,7 +14,7 @@ objects:
   spec:
     host: ${BASE_NAME}-${MAJOR_VERSION}-staging.${WILDCARD_DOMAIN}
     port:
-      targetPort: proxy
+      targetPort: gateway
     tls:
       termination: edge
       insecureEdgeTerminationPolicy: Allow
@@ -30,7 +30,7 @@ objects:
   spec:
     host: ${BASE_NAME}-${MAJOR_VERSION}.${WILDCARD_DOMAIN}
     port:
-      targetPort: proxy
+      targetPort: gateway
     tls:
       termination: edge
       insecureEdgeTerminationPolicy: Allow
