@@ -40,7 +40,8 @@ paths:
         required: true
         type: string
       responses:
-        200: {}
+        200:
+          description: OK
   /sourcegateway/transfer:
     post:
       tags:
