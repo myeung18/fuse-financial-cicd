@@ -20,6 +20,7 @@ node('maven') {
     env.uatnamespace = "fisdemo";
     env.prodnamespace = "fisdemoprod";
 
+    route_file: "apicast-routes-template.yaml";
 
 
 
@@ -73,48 +74,7 @@ node('maven') {
      stage('CreateRouteInside3scale') {
 
       print 'Update Route to only point to both new and stable service'
-     openshiftCreateResource jsonyaml: """apiVersion: template.openshift.io/v1
-         kind: Template
-         labels:
-         template: apicast
-         metadata:
-         annotations:
-         description: RHTE APIcast Routes
-         name: rhte-apicast-routes
-         objects:
-         - apiVersion: route.openshift.io/v1
-         kind: Route
-         metadata:
-         name: ${BASE_NAME}-${MAJOR_VERSION}-staging
-         spec:
-         host: ${BASE_NAME}-${MAJOR_VERSION}-staging.${WILDCARD_DOMAIN}
-         port:
-         targetPort: proxy
-         tls:
-         termination: edge
-         insecureEdgeTerminationPolicy: Allow
-         to:
-         kind: Service
-         name: apicast-staging
-         weight: 100
-         wildcardPolicy: None
-         - apiVersion: route.openshift.io/v1
-         kind: Route
-         metadata:
-         name: ${BASE_NAME}-${MAJOR_VERSION}-production
-         spec:
-         host: ${BASE_NAME}-${MAJOR_VERSION}.${WILDCARD_DOMAIN}
-         port:
-         targetPort: proxy
-         tls:
-         termination: edge
-         insecureEdgeTerminationPolicy: Allow
-         to:
-         kind: Service
-         name: apicast-production
-         weight: 100
-         wildcardPolicy: None
-       
+         openshiftCreateResource jsonyaml: "route_file";
      }
 
 
