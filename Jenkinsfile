@@ -20,7 +20,7 @@ node('maven') {
     env.uatnamespace = "fisdemo";
     env.prodnamespace = "fisdemoprod";
 
-    env.route_file: "apicast-routes-template.yaml";
+    env.route_file= "apicast-routes-template.yaml";
 
 
 
