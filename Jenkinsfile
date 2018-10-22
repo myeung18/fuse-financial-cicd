@@ -73,7 +73,7 @@ node('maven') {
 
      stage('CreateRouteInside3scale') {
 
-	  sh "oc get projects -q "
+	  sh "oc process -f apicast-routes-template.yaml -p MAJOR_VERSION=1 -p WILDCARD_DOMAIN=test.app.itix.fr | oc create -f - -n rhte-test"
 
 
       print 'Update Route to only point to both new and stable service'
