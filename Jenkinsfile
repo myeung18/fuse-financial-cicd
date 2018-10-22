@@ -73,9 +73,15 @@ node('maven') {
 
      stage('CreateRouteInside3scale') {
 
+  try {
+
 
 	  sh "oc process -f https://raw.githubusercontent.com/redhatHameed/fuse-financial-cicd/master/apicast-routes-template.yaml -p MAJOR_VERSION=1 -p WILDCARD_DOMAIN=test.app.itix.fr | oc create -f - "
 
+
+} catch (err) {
+                echo err
+            }
 
       
      }
