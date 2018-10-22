@@ -71,8 +71,8 @@ objects:
           value: ${ANSIBLE_SMOKE_TEST_OPREATION}
         - name: API_CAST_ROUTE_TEMPLATE_FILE
           value: ${API_CAST_ROUTE_TEMPLATE_FILE}
-        - name: 3SCALE_OPENSHIFT_PROJECT_NAME
-          value: ${3SCALE_OPENSHIFT_PROJECT_NAME}
+        - name: THREESCALE_OPENSHIFT_PROJECT
+          value: ${THREESCALE_OPENSHIFT_PROJECT}
 
 parameters:
 - name: GIT_REPO
@@ -153,7 +153,7 @@ parameters:
   required: true
   value: https://raw.githubusercontent.com/redhatHameed/fuse-financial-cicd/master/apicast-routes-template.yaml
   description: apicast route template file used to create the routes
-- name: 3SCALE_OPENSHIFT_PROJECT_NAME
+- name: THREESCALE_OPENSHIFT_PROJECT
   displayName: The Name of API CAST Gateway Project or 3scale project name deployed on Openshift to create the routes
   required: true
   value: ah-3scale-ansible
