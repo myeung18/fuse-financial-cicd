@@ -73,13 +73,13 @@ node('maven') {
 
      stage('CreateRouteInside3scale') {
 
- catchError {
+ //catchError {
 
 
-	  sh "oc process -f https://raw.githubusercontent.com/redhatHameed/fuse-financial-cicd/master/apicast-routes-template.yaml -p BASE_NAME=3scalefuse -p MAJOR_VERSION=1 -p WILDCARD_DOMAIN=app.rhdp.ocp.cloud.lab.eng.bos.redhat.com | oc create -f -n ah-3scale-ansible"
+	  sh "oc process -f https://raw.githubusercontent.com/redhatHameed/fuse-financial-cicd/master/apicast-routes-template.yaml -p BASE_NAME=3scalefuse -p MAJOR_VERSION=1 -p WILDCARD_DOMAIN=app.rhdp.ocp.cloud.lab.eng.bos.redhat.com | oc create -f - -n ah-3scale-ansible"
 
 
-} 
+//} 
       
      }
 
