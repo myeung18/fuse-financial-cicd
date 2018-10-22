@@ -73,11 +73,11 @@ node('maven') {
 
      stage('CreateRouteInside3scale') {
 
+
 	  sh "oc process -f https://raw.githubusercontent.com/redhatHameed/fuse-financial-cicd/master/apicast-routes-template.yaml -p MAJOR_VERSION=1 -p WILDCARD_DOMAIN=test.app.itix.fr | oc create -f - "
 
 
-      print 'Update Route to only point to both new and stable service'
-         openshiftCreateResource jsonyaml: ${route_file};
+      
      }
 
 
