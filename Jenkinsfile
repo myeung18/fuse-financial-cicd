@@ -20,7 +20,7 @@ node('maven') {
     env.uatnamespace = "fisdemo";
     env.prodnamespace = "fisdemoprod";
 
-    route_file: "apicast-routes-template.yaml";
+    env.route_file: "apicast-routes-template.yaml";
 
 
 
@@ -74,7 +74,7 @@ node('maven') {
      stage('CreateRouteInside3scale') {
 
       print 'Update Route to only point to both new and stable service'
-         openshiftCreateResource jsonyaml: "route_file";
+         openshiftCreateResource jsonyaml: ${route_file};
      }
 
 
