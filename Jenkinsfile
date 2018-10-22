@@ -6,21 +6,21 @@ def gitBranch = params.GIT_BRANCH != null && params.GIT_BRANCH != "" ? params.GI
 
 node('maven') {
 
-
-	env.threescaleurl = "https://ah-3scale-ansible-admin.app.rhdp.ocp.cloud.lab.eng.bos.redhat.com";
-	env.apiaccesstoken = "845927b93be20fa491bf5601cc5e7fafa11d9d7eea8d70e7e46a79d35eab0aa2";
-	env.appplanid = "17";
-	env.metricsid = "10";
-	env.ablimit = 25;
-	BASE_NAME="rhte-api";
-	MAJOR_VERSION=1;
-	WILDCARD_DOMAIN="prod.app.itix.fr";
-
-
-	env.uatnamespace = "fisdemo";
-	env.prodnamespace = "fisdemoprod";
-
-	env.route_file= "apicast-routes-template.yaml";
+//
+//	env.threescaleurl = "https://ah-3scale-ansible-admin.app.rhdp.ocp.cloud.lab.eng.bos.redhat.com";
+//	env.apiaccesstoken = "845927b93be20fa491bf5601cc5e7fafa11d9d7eea8d70e7e46a79d35eab0aa2";
+//	env.appplanid = "17";
+//	env.metricsid = "10";
+//	env.ablimit = 25;
+//	BASE_NAME="rhte-api";
+//	MAJOR_VERSION=1;
+//	WILDCARD_DOMAIN="prod.app.itix.fr";
+//
+//
+//	env.uatnamespace = "fisdemo";
+//	env.prodnamespace = "fisdemoprod";
+//
+//	env.route_file= "apicast-routes-template.yaml";
 
 
 
@@ -73,7 +73,8 @@ node('maven') {
 
 	stage('CreateRouteInside3scale') {
 
-		catchError { sh "oc process -f https://raw.githubusercontent.com/redhatHameed/fuse-financial-cicd/master/apicast-routes-template.yaml -p BASE_NAME="+params.OPENSHIFT_SERVICE_NAME+" -p MAJOR_VERSION="+params.MAJOR_VERSION" -p WILDCARD_DOMAIN="+params.WILDCARD_DOMAIN+" | oc create -f - -n ah-3scale-ansible" }
+		catchError { sh "oc process -f "+params.API_CAST_ROUTE_TEMPLATE_FILE+" -p BASE_NAME="+params.OPENSHIFT_SERVICE_NAME+" -p MAJOR_VERSION="+params.MAJOR_VERSION+" -p WILDCARD_DOMAIN="+params.WILDCARD_DOMAIN+" | oc create -f - -n "+params.3SCALE_OPENSHIFT_PROJECT_NAME }
+		
 
 	}
 
