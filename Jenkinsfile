@@ -73,6 +73,9 @@ node('maven') {
 
      stage('CreateRouteInside3scale') {
 
+	  sh "oc get projects -q "
+
+
       print 'Update Route to only point to both new and stable service'
          openshiftCreateResource jsonyaml: ${route_file};
      }
