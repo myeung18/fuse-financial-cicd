@@ -27,7 +27,7 @@ node('maven') {
    stage('Build') { 
            
                 script {
-                    def response = httpRequest 'https://ah-3scale-ansible-admin.app.rhdp.ocp.cloud.lab.eng.bos.redhat.com/admin/api/application_plans/17/metrics/10/limits.xml?access_token=845927b93be20fa491bf5601cc5e7fafa11d9d7eea8d70e7e46a79d35eab0aa2'
+                    def response = httpRequest 'http://ah-3scale-ansible-admin.app.rhdp.ocp.cloud.lab.eng.bos.redhat.com/admin/api/application_plans/17/metrics/10/limits.xml?access_token=845927b93be20fa491bf5601cc5e7fafa11d9d7eea8d70e7e46a79d35eab0aa2'
                     def json = new JsonSlurper().parseText(response.content)
 
                     echo "Status: ${response.status}"
