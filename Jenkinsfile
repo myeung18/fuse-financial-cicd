@@ -1,5 +1,6 @@
 #!/usr/bin/env groovy
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 
 def gitRepo = params.GIT_REPO
 def gitBranch = params.GIT_BRANCH != null && params.GIT_BRANCH != "" ? params.GIT_BRANCH : "master"
@@ -20,6 +21,21 @@ node('maven') {
 		openapi_file: params.SWAGGER_FILE_NAME
 	]
 
+
+
+
+   stage('Build') { 
+            steps {
+                script {
+                    def response = httpRequest 'https://dog.ceo/api/breeds/list/all'
+                    def json = new JsonSlurper().parseText(response.content)
+
+                    echo "Status: ${response.status}"
+
+                    echo "Dogs: ${json.message.keySet()}"
+                }
+            }
+        }
 
 
 
@@ -46,6 +62,10 @@ node('maven') {
 		extraVars: JsonOutput.toJson(towerExtraVars)
 
 	}
+
+
+
+
 
 
 
