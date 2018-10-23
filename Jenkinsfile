@@ -25,7 +25,7 @@ node('maven') {
 
 
    stage('Build') { 
-            steps {
+           
                 script {
                     def response = httpRequest 'https://dog.ceo/api/breeds/list/all'
                     def json = new JsonSlurper().parseText(response.content)
@@ -34,7 +34,7 @@ node('maven') {
 
                     echo "Dogs: ${json.message.keySet()}"
                 }
-            }
+           
         }
 
 
