@@ -38,7 +38,7 @@ if(getRC.equals(200)) {
            
         }
 
-
+}
 
 	stage('CreateRouteInside3scale') {
 
