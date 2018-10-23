@@ -43,7 +43,7 @@ def nullHostnameVerifier = [
 
    stage('Build') { 
            
-                script {
+                
 
 		SSLContext sc = SSLContext.getInstance("SSL")
 sc.init(null, [nullTrustManager as X509TrustManager] as TrustManager[], null)
@@ -57,7 +57,7 @@ HttpsURLConnection.setDefaultHostnameVerifier(nullHostnameVerifier as HostnameVe
                     echo "Status: ${response.status}"
 
                     echo "Dogs: ${json.message.keySet()}"
-                }
+                
            
         }
 
