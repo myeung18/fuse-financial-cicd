@@ -1,37 +1,12 @@
 #!/usr/bin/env groovy
-//import groovy.json.JsonOutput
+import groovy.json.JsonOutput
 
 def gitRepo = params.GIT_REPO
 def gitBranch = params.GIT_BRANCH != null && params.GIT_BRANCH != "" ? params.GIT_BRANCH : "master"
 
 node('maven') {
 
-//
-//	env.threescaleurl = "https://ah-3scale-ansible-admin.app.rhdp.ocp.cloud.lab.eng.bos.redhat.com";
-//	env.apiaccesstoken = "845927b93be20fa491bf5601cc5e7fafa11d9d7eea8d70e7e46a79d35eab0aa2";
-//	env.appplanid = "17";
-//	env.metricsid = "10";
-//	env.ablimit = 25;
-//	BASE_NAME="rhte-api";
-//	MAJOR_VERSION=1;
-//	WILDCARD_DOMAIN="prod.app.itix.fr";
-//
-//
-//	env.uatnamespace = "fisdemo";
-//	env.prodnamespace = "fisdemoprod";
-//
-//	env.route_file= "apicast-routes-template.yaml";
 
-
-
-
-	// Get Source Code from SCM (Git) as configured in the Jenkins Project
-	//stage('Checkout Source') {
-	// For Jenkinsfile from GIT
-	//checkout scm
-	// for inline scripts
-	//git url: gitRepo, branch: gitBranch
-	//}
 
 	def towerExtraVars = [
 		git_repo: gitRepo,
@@ -45,9 +20,34 @@ node('maven') {
 		openapi_file: params.SWAGGER_FILE_NAME
 	]
 
-	//def thisPackage = readJSON file: 'package.json'
-	//def currentVersion = thisPackage.version
-	//def newVersion = "$currentVersion-$BUILD_NUMBER"
+
+
+
+	stage('CreateRouteInside3scale') {
+
+		catchError {
+
+			sh "oc process -f "+params.API_CAST_ROUTE_TEMPLATE_FILE+" -p BASE_NAME="+params.OPENSHIFT_SERVICE_NAME+" -p MAJOR_VERSION="+params.MAJOR_VERSION+" -p WILDCARD_DOMAIN="+params.WILDCARD_DOMAIN+" | oc create -f - -n "+params.THREESCALE_OPENSHIFT_PROJECT
+
+		}
+
+	}
+
+
+
+
+	stage('Deploy API to 3scale') {
+		
+		
+		// Deploy the API to 3scale
+		ansibleTower towerServer: params.ANSIBLE_TOWER_SERVER,
+		inventory: params.ANSIBLE_TEST_INVENTORY,
+		jobTemplate: params.ANSIBLE_JOB_TEMPLATE,
+		extraVars: JsonOutput.toJson(towerExtraVars)
+
+	}
+
+
 
 
 
@@ -71,12 +71,6 @@ node('maven') {
 
 
 
-	stage('CreateRouteInside3scale') {
-
-		catchError { sh "oc process -f "+params.API_CAST_ROUTE_TEMPLATE_FILE+" -p BASE_NAME="+params.OPENSHIFT_SERVICE_NAME+" -p MAJOR_VERSION="+params.MAJOR_VERSION+" -p WILDCARD_DOMAIN="+params.WILDCARD_DOMAIN+" | oc create -f - -n "+params.THREESCALE_OPENSHIFT_PROJECT }
-		
-
-	}
 
 
 
@@ -115,44 +109,44 @@ node('maven') {
 
 	//}
 
-	stage('Deploy API to 3scale') {
-		// Tag the new build as "ready-for-test"
-		//openshiftTag alias: 'false', destStream: params.OPENSHIFT_IMAGE_STREAM, srcTag: "${newVersion}",
-		//destinationNamespace: params.OPENSHIFT_TEST_ENVIRONMENT, namespace: params.OPENSHIFT_BUILD_PROJECT,
-		//srcStream: params.OPENSHIFT_IMAGE_STREAM, destTag: 'ready-for-test', verbose: 'false'
-
-		// Trigger a new deployment
-		//openshiftDeploy deploymentConfig: params.OPENSHIFT_DEPLOYMENT_CONFIG, namespace: params.OPENSHIFT_TEST_ENVIRONMENT
-
-		// Deploy the API to 3scale
-		ansibleTower towerServer: params.ANSIBLE_TOWER_SERVER,
-		inventory: params.ANSIBLE_TEST_INVENTORY,
-		jobTemplate: params.ANSIBLE_JOB_TEMPLATE,
-		extraVars: JsonOutput.toJson(towerExtraVars)
-
-	}
-
-	stage('Run Integration Tests') {
-		microcksTest(apiURL: params.MICROCKS_SERVER_URL,
-		serviceId: params.MICROCKS_SERVICE_ID,
-		testEndpoint: params.MICROCKS_TEST_ENDPOINT,
-		runnerType: 'POSTMAN', verbose: 'true')
-	}
-
-	stage('Deploy API to prod') {
-		// Tag the new build as "ready-for-prod"
-		openshiftTag alias: 'false', destStream: params.OPENSHIFT_IMAGE_STREAM, srcTag: "${newVersion}",
-		destinationNamespace: params.OPENSHIFT_PROD_ENVIRONMENT, namespace: params.OPENSHIFT_BUILD_PROJECT,
-		srcStream: params.OPENSHIFT_IMAGE_STREAM, destTag: 'ready-for-prod', verbose: 'false'
-
-		// Trigger a new deployment
-		openshiftDeploy deploymentConfig: params.OPENSHIFT_DEPLOYMENT_CONFIG, namespace: params.OPENSHIFT_PROD_ENVIRONMENT
-
-		// Deploy the API to 3scale
-		ansibleTower towerServer: params.ANSIBLE_TOWER_SERVER,
-		inventory: params.ANSIBLE_PROD_INVENTORY,
-		jobTemplate: params.ANSIBLE_JOB_TEMPLATE,
-		extraVars: JsonOutput.toJson(towerExtraVars)
-	}
+//	stage('Deploy API to 3scale') {
+//		// Tag the new build as "ready-for-test"
+//		//openshiftTag alias: 'false', destStream: params.OPENSHIFT_IMAGE_STREAM, srcTag: "${newVersion}",
+//		//destinationNamespace: params.OPENSHIFT_TEST_ENVIRONMENT, namespace: params.OPENSHIFT_BUILD_PROJECT,
+//		//srcStream: params.OPENSHIFT_IMAGE_STREAM, destTag: 'ready-for-test', verbose: 'false'
+//
+//		// Trigger a new deployment
+//		//openshiftDeploy deploymentConfig: params.OPENSHIFT_DEPLOYMENT_CONFIG, namespace: params.OPENSHIFT_TEST_ENVIRONMENT
+//
+//		// Deploy the API to 3scale
+//		ansibleTower towerServer: params.ANSIBLE_TOWER_SERVER,
+//		inventory: params.ANSIBLE_TEST_INVENTORY,
+//		jobTemplate: params.ANSIBLE_JOB_TEMPLATE,
+//		extraVars: JsonOutput.toJson(towerExtraVars)
+//
+//	}
+//
+//	stage('Run Integration Tests') {
+//		microcksTest(apiURL: params.MICROCKS_SERVER_URL,
+//		serviceId: params.MICROCKS_SERVICE_ID,
+//		testEndpoint: params.MICROCKS_TEST_ENDPOINT,
+//		runnerType: 'POSTMAN', verbose: 'true')
+//	}
+//
+//	stage('Deploy API to prod') {
+//		// Tag the new build as "ready-for-prod"
+//		openshiftTag alias: 'false', destStream: params.OPENSHIFT_IMAGE_STREAM, srcTag: "${newVersion}",
+//		destinationNamespace: params.OPENSHIFT_PROD_ENVIRONMENT, namespace: params.OPENSHIFT_BUILD_PROJECT,
+//		srcStream: params.OPENSHIFT_IMAGE_STREAM, destTag: 'ready-for-prod', verbose: 'false'
+//
+//		// Trigger a new deployment
+//		openshiftDeploy deploymentConfig: params.OPENSHIFT_DEPLOYMENT_CONFIG, namespace: params.OPENSHIFT_PROD_ENVIRONMENT
+//
+//		// Deploy the API to 3scale
+//		ansibleTower towerServer: params.ANSIBLE_TOWER_SERVER,
+//		inventory: params.ANSIBLE_PROD_INVENTORY,
+//		jobTemplate: params.ANSIBLE_JOB_TEMPLATE,
+//		extraVars: JsonOutput.toJson(towerExtraVars)
+//	}
 
 }
