@@ -1,6 +1,12 @@
 #!/usr/bin/env groovy
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import javax.net.ssl.HostnameVerifier
+import javax.net.ssl.HttpsURLConnection
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
+import java.security.SecureRandom;
 
 def gitRepo = params.GIT_REPO
 def gitBranch = params.GIT_BRANCH != null && params.GIT_BRANCH != "" ? params.GIT_BRANCH : "master"
