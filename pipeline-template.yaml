@@ -115,7 +115,7 @@ parameters:
   value: route3
   required: true
 - name: OPENSHIFT_SERVICE_NAME
-  value: 3scaleFuse
+  value: 3scalefuse
   required: true
 - name: OPENSHIFT_IMAGE_STREAM
   value: 3scaleFuse
