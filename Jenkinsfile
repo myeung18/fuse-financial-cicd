@@ -1,8 +1,6 @@
 #!/usr/bin/env groovy
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import groovyx.net.http.RESTClient
-import static groovyx.net.http.ContentType.JSON
 
 def gitRepo = params.GIT_REPO
 def gitBranch = params.GIT_BRANCH != null && params.GIT_BRANCH != "" ? params.GIT_BRANCH : "master"
@@ -28,28 +26,26 @@ node('maven') {
 
    stage('Build') { 
            
-                
+                script {
 
-url = "http://restapi3.apiary.io"
+		def sc = SSLContext.getInstance("SSL")
+		def trustAll = [getAcceptedIssuers: {}, checkClientTrusted: { a, b -> }, checkServerTrusted: { a, b -> }]
+		sc.init(null, [trustAll as X509TrustManager] as TrustManager[], new SecureRandom())
+		HttpsURLConnection.defaultSSLSocketFactory = sc.socketFactory
 
-@Grab (group = 'org.codehaus.groovy.modules.http-builder', module = 'http-builder', version = '0.5.0')
-def client = new RESTClient(url)
 
-def emptyHeaders = [:]
-emptyHeaders."Accept" = 'application/json'
-emptyHeaders."Prefer" = 'test'
 
-def response = client.get(path: "/notes",
-  headers: emptyHeaders
+                    def response = httpRequest 'http://ah-3scale-ansible-admin.app.rhdp.ocp.cloud.lab.eng.bos.redhat.com/admin/api/application_plans/17/metrics/10/limits.xml?access_token=845927b93be20fa491bf5601cc5e7fafa11d9d7eea8d70e7e46a79d35eab0aa2'
+                    def json = new JsonSlurper().parseText(response.content)
 
-println("Status: " + response.status)
-if (response.data) {
-  println("Content Type: " + response.contentType)
-  println("Headers: " + response.getAllHeaders())
-  println("Body:\n" + JsonOutput.prettyPrint(JsonOutput.toJson(response.data)))
-}
+                    echo "Status: ${response.status}"
 
-}
+                    echo "Dogs: ${json.message.keySet()}"
+                }
+           
+        }
+
+
 
 	stage('CreateRouteInside3scale') {
 
