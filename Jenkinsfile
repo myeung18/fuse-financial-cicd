@@ -35,43 +35,41 @@ node('maven') {
 
 
 
-	stage('CreateRouteInside3scale') {
-
-		catchError {
-
-			sh "oc process -f "+params.API_CAST_ROUTE_TEMPLATE_FILE+" -p BASE_NAME="+params.OPENSHIFT_SERVICE_NAME+" -p MAJOR_VERSION="+params.MAJOR_VERSION+" -p WILDCARD_DOMAIN="+params.WILDCARD_DOMAIN+" | oc create -f - -n "+params.THREESCALE_OPENSHIFT_PROJECT
-
-		}
-
-	}
-
-
-	stage('Deploy API with Ansible to 3scale') {
-
-
-		// Deploy the API to 3scale
-		ansibleTower towerServer: params.ANSIBLE_TOWER_SERVER,
-		inventory: params.ANSIBLE_TEST_INVENTORY,
-		jobTemplate: params.ANSIBLE_JOB_TEMPLATE,
-		extraVars: JsonOutput.toJson(towerExtraVars)
-
-	}
-	
-	
-	
-	stage ('promotionCheck') {
-		def userInput = input( id: "userInput", message: "Promote to UAT?", parameters: [ [$class: "TextParameterDefinition", defaultValue: "Comments?", description: "comments", name: "comments"] ])
-		print 'promotionCheck'
-	}
+//	stage('CreateRouteInside3scale') {
+//
+//		catchError {
+//
+//			sh "oc process -f "+params.API_CAST_ROUTE_TEMPLATE_FILE+" -p BASE_NAME="+params.OPENSHIFT_SERVICE_NAME+" -p MAJOR_VERSION="+params.MAJOR_VERSION+" -p WILDCARD_DOMAIN="+params.WILDCARD_DOMAIN+" | oc create -f - -n "+params.THREESCALE_OPENSHIFT_PROJECT
+//
+//		}
+//
+//	}
+//
+//
+//	stage('Deploy API with Ansible to 3scale') {
+//
+//
+//		// Deploy the API to 3scale
+//		ansibleTower towerServer: params.ANSIBLE_TOWER_SERVER,
+//		inventory: params.ANSIBLE_TEST_INVENTORY,
+//		jobTemplate: params.ANSIBLE_JOB_TEMPLATE,
+//		extraVars: JsonOutput.toJson(towerExtraVars)
+//
+//	}
+//	
+//	
+//	
+//	stage ('promotionCheck') {
+//		def userInput = input( id: "userInput", message: "Promote to UAT?", parameters: [ [$class: "TextParameterDefinition", defaultValue: "Comments?", description: "comments", name: "comments"] ])
+//		print 'promotionCheck'
+//	}
 
 	stage('Create Service with Grovy') {
 
-		create3scaleService(
-				"https://ah-3scale-ansible-admin.app.rhdp.ocp.cloud.lab.eng.bos.redhat.com",
-				"845927b93be20fa491bf5601cc5e7fafa11d9d7eea8d70e7e46a79d35eab0aa2",
+		create3scaleService(params.THREESCALE_URL,params.API_TOKEN,
 				"https://3scalefuse-1-staging.app.rhdp.ocp.cloud.lab.eng.bos.redhat.com",
 				"https://raw.githubusercontent.com/redhatHameed/fuse-financial-cicd/master/openapi-spec.json",
-				"test_3scalefuse_1")
+				"3scalefuse")
 
 	}
 
@@ -203,6 +201,8 @@ def create3scaleService(
 	def activeDocSpecCreateUrl = "${adminBaseUrl}/admin/api/services.json"
 	def name = swaggerDoc.info.title != null ? swaggerDoc.info.title : serviceSystemName
 	def data = "access_token=${token}&name=${name}&system_name=${serviceSystemName}"
+	println('Data...')
+	
 	//access_token={{access_token}}&name={{name}}&deployment_option={{deployment_option}}&backend_version={{backend_version}}&system_name={{system_name}}"
 	makeRequestwithBody(activeDocSpecCreateUrl, data, 'POST')
 	//}
