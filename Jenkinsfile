@@ -6,7 +6,7 @@ import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
-import java.security.SecureRandom;
+import java.security.SecureRandom
 import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
 import java.net.URLEncoder
@@ -99,7 +99,7 @@ def makeRequestwithBody(url, body, method) {
 		println('Active Docs updated/created successfully!')
 	}
 }
-return this
+
 
 node('maven') {
 
