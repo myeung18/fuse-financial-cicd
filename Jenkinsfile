@@ -38,23 +38,17 @@ node('maven') {
 
    stage('Build') { 
 
-           def url = "http://ah-3scale-ansible-admin.app.rhdp.ocp.cloud.lab.eng.bos.redhat.com/admin/api/application_plans/17/metrics/10/limits.xml?access_token=845927b93be20fa491bf5601cc5e7fafa11d9d7eea8d70e7e46a79d35eab0aa2"
-
-def sc = SSLContext.getInstance("SSL")
-def trustAll = [getAcceptedIssuers: {}, checkClientTrusted: { a, b -> }, checkServerTrusted: { a, b -> }]
-sc.init(null, [trustAll as X509TrustManager] as TrustManager[], new SecureRandom())
-HttpsURLConnection.defaultSSLSocketFactory = sc.socketFactory
-
-println url
+          def get = new URL("https://ah-3scale-ansible-admin.app.rhdp.ocp.cloud.lab.eng.bos.redhat.com/admin/api/application_plans/17/metrics/10/limits.xml?access_token=845927b93be20fa491bf5601cc5e7fafa11d9d7eea8d70e7e46a79d35eab0aa2").openConnection();
+def getRC = get.getResponseCode();
+println(getRC);
+if(getRC.equals(200)) {
+    println(get.getInputStream().getText());
+}
 
 
-                    def response = httpRequest url
-                    def json = new JsonSlurper().parseText(response.content)
 
-                    echo "Status: ${response.status}"
 
-                    //echo "Dogs: ${json.message.keySet()}"
-                
+
            
         }
 
