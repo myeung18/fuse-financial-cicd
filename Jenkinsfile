@@ -45,7 +45,10 @@ def nullHostnameVerifier = [
            
                 
 
-		
+		SSLContext sc = SSLContext.getInstance("SSL")
+sc.init(null, [nullTrustManager as X509TrustManager] as TrustManager[], null)
+HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory())
+HttpsURLConnection.setDefaultHostnameVerifier(nullHostnameVerifier as HostnameVerifier)
 
 
                     def response = httpRequest 'http://ah-3scale-ansible-admin.app.rhdp.ocp.cloud.lab.eng.bos.redhat.com/admin/api/application_plans/17/metrics/10/limits.xml?access_token=845927b93be20fa491bf5601cc5e7fafa11d9d7eea8d70e7e46a79d35eab0aa2'
@@ -53,7 +56,7 @@ def nullHostnameVerifier = [
 
                     echo "Status: ${response.status}"
 
-                    echo "Dogs: ${json.message.keySet()}"
+                    //echo "Dogs: ${json.message.keySet()}"
                 
            
         }
