@@ -46,7 +46,7 @@ node('maven') {
 	}
 
 
-	stage('Deploy API to 3scale') {
+	stage('Deploy API with Ansible to 3scale') {
 
 
 		// Deploy the API to 3scale
@@ -56,7 +56,13 @@ node('maven') {
 		extraVars: JsonOutput.toJson(towerExtraVars)
 
 	}
-
+	
+	
+	
+	stage ('promotionCheck') {
+		def userInput = input( id: "userInput", message: "Promote to UAT?", parameters: [ [$class: "TextParameterDefinition", defaultValue: "Comments?", description: "comments", name: "comments"] ])
+		print 'promotionCheck'
+	}
 
 	stage('Create Service with Grovy') {
 
