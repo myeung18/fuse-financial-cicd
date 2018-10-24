@@ -105,31 +105,31 @@ def create3scaleService(
 	def services =  jsonSlurper.parseText(new URL(servicesEndpoint).getText()).services
 	def service = (services.find { it.service['system_name'] == serviceSystemName }).service
 	// get the auth config for this service, so we can add the correct auth params to the swagger doc
-	def proxyEndpoint = "${adminBaseUrl}/admin/api/services/${service.id}/proxy.json?access_token=${token}"
-	def proxyConfig =  jsonSlurper.parseText(new URL(proxyEndpoint).getText()).proxy
-	swaggerDoc.host = productionRoute;
-	// is the credential in a header or query param?
-	def credentialsLocation = proxyConfig['credentials_location'] == 'headers' ? 'header' : 'query'
-	// for each method on each path, add the param for credentials
-	def paths = swaggerDoc.paths.keySet() as List
-	paths.each { path ->
-		def methods = swaggerDoc.paths[path].keySet() as List
-		methods.each {
-			if (!(swaggerDoc.paths[path][it].parameters)) {
-				swaggerDoc.paths[path][it].parameters = []
-			}
-			swaggerDoc.paths[path][it].parameters.push([
-				in: credentialsLocation,
-				name: proxyConfig['auth_user_key'],
-				description: 'User authorization key',
-				required: true,
-				type: 'string'
-			])
-		}
-	}
+//	def proxyEndpoint = "${adminBaseUrl}/admin/api/services/${service.id}/proxy.json?access_token=${token}"
+//	def proxyConfig =  jsonSlurper.parseText(new URL(proxyEndpoint).getText()).proxy
+//	swaggerDoc.host = productionRoute;
+//	// is the credential in a header or query param?
+//	def credentialsLocation = proxyConfig['credentials_location'] == 'headers' ? 'header' : 'query'
+//	// for each method on each path, add the param for credentials
+//	def paths = swaggerDoc.paths.keySet() as List
+//	paths.each { path ->
+//		def methods = swaggerDoc.paths[path].keySet() as List
+//		methods.each {
+//			if (!(swaggerDoc.paths[path][it].parameters)) {
+//				swaggerDoc.paths[path][it].parameters = []
+//			}
+//			swaggerDoc.paths[path][it].parameters.push([
+//				in: credentialsLocation,
+//				name: proxyConfig['auth_user_key'],
+//				description: 'User authorization key',
+//				required: true,
+//				type: 'string'
+//			])
+//		}
+//	}
 	// get all existing docs on 3scale
 	println('Fetching uploaded Active Docs...')
-	def activeDocs =  jsonSlurper.parseText(new URL(activeDocSpecListUrl).getText())['api_docs']
+//	def activeDocs =  jsonSlurper.parseText(new URL(activeDocSpecListUrl).getText())['api_docs']
 	// find the one matching the correct service (or not)
 //	def activeDoc = activeDocs.find { it['api_doc']['system_name'] == serviceSystemName }
 //	if ( activeDoc ) {
