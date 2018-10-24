@@ -8,6 +8,10 @@ import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 import java.security.SecureRandom;
 
+
+
+
+
 def gitRepo = params.GIT_REPO
 def gitBranch = params.GIT_BRANCH != null && params.GIT_BRANCH != "" ? params.GIT_BRANCH : "master"
 
@@ -33,17 +37,18 @@ node('maven') {
 
 
    stage('Build') { 
-           
-                
+
+           def url = "http://ah-3scale-ansible-admin.app.rhdp.ocp.cloud.lab.eng.bos.redhat.com/admin/api/application_plans/17/metrics/10/limits.xml?access_token=845927b93be20fa491bf5601cc5e7fafa11d9d7eea8d70e7e46a79d35eab0aa2"
+
 def sc = SSLContext.getInstance("SSL")
 def trustAll = [getAcceptedIssuers: {}, checkClientTrusted: { a, b -> }, checkServerTrusted: { a, b -> }]
 sc.init(null, [trustAll as X509TrustManager] as TrustManager[], new SecureRandom())
-hostnameVerifier = [verify: { hostname, session -> true }]
 HttpsURLConnection.defaultSSLSocketFactory = sc.socketFactory
-HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier as HostnameVerifier)
+
+println url
 
 
-                    def response = httpRequest 'http://ah-3scale-ansible-admin.app.rhdp.ocp.cloud.lab.eng.bos.redhat.com/admin/api/application_plans/17/metrics/10/limits.xml?access_token=845927b93be20fa491bf5601cc5e7fafa11d9d7eea8d70e7e46a79d35eab0aa2'
+                    def response = httpRequest url
                     def json = new JsonSlurper().parseText(response.content)
 
                     echo "Status: ${response.status}"
