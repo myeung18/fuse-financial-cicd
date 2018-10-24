@@ -144,7 +144,7 @@ node('maven') {
 			 "845927b93be20fa491bf5601cc5e7fafa11d9d7eea8d70e7e46a79d35eab0aa2",
 			 "https://3scalefuse-1-staging.app.rhdp.ocp.cloud.lab.eng.bos.redhat.com",
 			 "https://github.com/redhatHameed/fuse-financial-cicd/blob/master/openapi-spec.yaml",
-			 "groovy")
+			 "test_3scalefuse_1")
 
 		
 
