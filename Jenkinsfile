@@ -35,43 +35,68 @@ node('maven') {
 
 
 
-//	stage('CreateRouteInside3scale') {
-//
-//		catchError {
-//
-//			sh "oc process -f "+params.API_CAST_ROUTE_TEMPLATE_FILE+" -p BASE_NAME="+params.OPENSHIFT_SERVICE_NAME+" -p MAJOR_VERSION="+params.MAJOR_VERSION+" -p WILDCARD_DOMAIN="+params.WILDCARD_DOMAIN+" | oc create -f - -n "+params.THREESCALE_OPENSHIFT_PROJECT
-//
-//		}
-//
-//	}
-//
-//
-//	stage('Deploy API with Ansible to 3scale') {
-//
-//
-//		// Deploy the API to 3scale
-//		ansibleTower towerServer: params.ANSIBLE_TOWER_SERVER,
-//		inventory: params.ANSIBLE_TEST_INVENTORY,
-//		jobTemplate: params.ANSIBLE_JOB_TEMPLATE,
-//		extraVars: JsonOutput.toJson(towerExtraVars)
-//
-//	}
-//	
-//	
-//	
-//	stage ('promotionCheck') {
-//		def userInput = input( id: "userInput", message: "Promote to UAT?", parameters: [ [$class: "TextParameterDefinition", defaultValue: "Comments?", description: "comments", name: "comments"] ])
-//		print 'promotionCheck'
-//	}
+	stage('CreateRouteInside3scale') {
+
+		catchError {
+
+			sh "oc process -f "+params.API_CAST_ROUTE_TEMPLATE_FILE+" -p BASE_NAME="+params.OPENSHIFT_SERVICE_NAME+" -p MAJOR_VERSION="+params.MAJOR_VERSION+" -p WILDCARD_DOMAIN="+params.WILDCARD_DOMAIN+" | oc create -f - -n "+params.THREESCALE_OPENSHIFT_PROJECT
+
+		}
+
+	}
+
+
+	stage('Deploy API with Ansible to 3scale') {
+
+
+		// Deploy the API to 3scale
+		ansibleTower towerServer: params.ANSIBLE_TOWER_SERVER,
+		inventory: params.ANSIBLE_TEST_INVENTORY,
+		jobTemplate: params.ANSIBLE_JOB_TEMPLATE,
+		extraVars: JsonOutput.toJson(towerExtraVars)
+
+	}
+
+
+
+	stage ('Start wth Groovy') {
+		def userInput = input( id: "userInput", message: "Let's Deploy API with Groovy?", parameters: [
+			[$class: "TextParameterDefinition", defaultValue: "Comments?", description: "comments", name: "comments"]
+		])
+		print 'promotionCheck'
+	}
 
 	stage('Create Service with Grovy') {
 
 		create3scaleService(params.THREESCALE_URL,params.API_TOKEN,
-				"https://3scalefuse-1-staging.app.rhdp.ocp.cloud.lab.eng.bos.redhat.com",
 				"https://raw.githubusercontent.com/redhatHameed/fuse-financial-cicd/master/openapi-spec.json",
 				"3scalefuse")
 
 	}
+
+}
+
+
+
+def create3scaleService(
+		String adminBaseUrl,
+		String token,
+		String backendServiceSwaggerEndpoint,
+		String serviceSystemName) {
+
+
+	def jsonSlurper = new JsonSlurper()
+	println('Fetching service swagger json...')
+	def swaggerDoc = jsonSlurper.parseText(new URL(backendServiceSwaggerEndpoint).getText())
+
+	println('Creating Service...')
+	def activeDocSpecCreateUrl = "${adminBaseUrl}/admin/api/services.json"
+	def name = swaggerDoc.info.title != null ? swaggerDoc.info.title : serviceSystemName
+	def data = "access_token=${token}&name=${name}&system_name=${serviceSystemName}"
+	println('Data...'+data)
+	println('CreateUrl...'+activeDocSpecCreateUrl);
+
+	makeRequestwithBody(activeDocSpecCreateUrl, data, 'POST')
 
 }
 
@@ -141,32 +166,6 @@ def update3scaleActiveDoc(
 
 
 
-
-def create3scaleService(
-		String adminBaseUrl,
-		String token,
-		String productionRoute,
-		String backendServiceSwaggerEndpoint,
-		String serviceSystemName) {
-
-	def activeDocSpecListUrl = "${adminBaseUrl}/admin/api/active_docs.json?access_token=${token}"
-	def servicesEndpoint = "${adminBaseUrl}/admin/api/services.json?access_token=${token}"
-
-	def jsonSlurper = new JsonSlurper()
-	println('Fetching service swagger json...')
-	def swaggerDoc = jsonSlurper.parseText(new URL(backendServiceSwaggerEndpoint).getText())
-	
-	println('Creating Service...')
-	def activeDocSpecCreateUrl = "${adminBaseUrl}/admin/api/services.json"
-	def name = swaggerDoc.info.title != null ? swaggerDoc.info.title : serviceSystemName
-	def data = "access_token=${token}&name=${name}&system_name=${serviceSystemName}"
-	println('Data...'+data)
-	println('CreateUrl...'+activeDocSpecCreateUrl);
-
-	makeRequestwithBody(activeDocSpecCreateUrl, data, 'POST')
-
-}
-
 def makeRequestwithBody(url, body, method) {
 	def post = new URL(url).openConnection();
 	post.setRequestMethod(method)
@@ -176,10 +175,10 @@ def makeRequestwithBody(url, body, method) {
 	post.getOutputStream().write(body.getBytes('UTF-8'))
 	def responseCode = post.getResponseCode();
 	if (responseCode != 200 && responseCode != 201) {
-		println('Failed to update/create Active Docs. HTTP response: ' + responseCode)
+		println('Failed to update/create . HTTP response: ' + responseCode)
 		assert false
 	} else {
-		println('Active Docs updated/created successfully!')
+		println('updated/created successfully!')
 	}
 }
 
